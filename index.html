@@ -55,6 +55,11 @@
         #void-wrapper ::-webkit-scrollbar-thumb:hover { background: #e07b00; }
         .upload-area.dragover { background-color: #FFF3E0; border-color: #FF8C00; }
 
+        /* CSS สำหรับ Custom Dashboard Module */
+        .custom-drop-zone { transition: all 0.3s ease; }
+        .custom-drop-zone.dragover { border-color: #000000; background-color: #ffedd5; }
+        #custom-dash-wrapper { font-family: 'Noto Sans Thai', sans-serif; background-color: #f9fafb; min-height: 100vh; padding-bottom: 2rem;}
+
         @media print {
             .global-tab-bar { display: none !important; }
             body { background-color: #ffffff !important; }
@@ -62,7 +67,7 @@
             .shadow-sm, .shadow-md, .shadow-lg { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
             canvas { max-width: 100% !important; height: auto !important; page-break-inside: avoid; }
             .print-page-break { page-break-before: always; }
-            #app, #void-wrapper { padding: 0 !important; max-width: 100% !important; }
+            #app, #void-wrapper, #custom-dash-wrapper { padding: 0 !important; max-width: 100% !important; }
         }
     </style>
 </head>
@@ -73,7 +78,7 @@
         <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center">
             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 mb-4"></div>
             <h3 class="text-xl font-bold text-gray-800" id="loadingTitle">กำลังค้นหาข้อมูลอัตโนมัติ...</h3>
-            <p class="text-gray-500 text-sm mt-2" id="loadingSub">รอสักครู่ ระบบกำลังตรวจสอบไฟล์จากเซิร์ฟเวอร์</p>
+            <p class="text-gray-500 text-sm mt-2" id="loadingSub">ระบบกำลังค่อยๆ ดึงข้อมูล เพื่อป้องกันเซิร์ฟเวอร์ทำงานหนัก</p>
         </div>
     </div>
 
@@ -99,6 +104,9 @@
                 </button>
                 <button id="btn-void" onclick="switchGlobalTab('void')" class="border-transparent text-gray-500 hover:text-red-600 hover:border-red-300 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-base flex items-center gap-2 transition-colors">
                     <i class="fas fa-ban"></i> Cancelled and Void Report
+                </button>
+                <button id="btn-custom-dash" onclick="switchGlobalTab('custom-dash')" class="border-transparent text-gray-500 hover:text-purple-600 hover:border-purple-300 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-base flex items-center gap-2 transition-colors">
+                    <i class="fas fa-images"></i> Custom Dashboard
                 </button>
             </div>
         </div>
@@ -147,7 +155,7 @@
                     <h2 class="text-xl font-semibold text-gray-700 mb-2 pointer-events-none">รอโหลดข้อมูลอัตโนมัติ หรือ ลากไฟล์มาวางที่นี่</h2>
                     <p class="text-gray-500 max-w-md pointer-events-none mb-2">ระบบประมวลผลอัจฉริยะ จะแยกแยะไฟล์ส่งไปยัง Tab ต่างๆ ให้อัตโนมัติ</p>
                     <p class="text-sm text-orange-600 font-medium pointer-events-none mb-6 bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
-                        <i class="fas fa-server"></i> ทริค: นำไฟล์ใส่โฟลเดอร์ /data/ ระบบจะโหลดให้เอง!
+                        <i class="fas fa-server"></i> ทริค: นำไฟล์ใส่โฟลเดอร์ /data/ หรืออัปโหลดไว้หน้าแรก ระบบจะโหลดให้เอง!
                     </p>
                     
                     <div class="flex flex-wrap gap-4 justify-center">
@@ -486,6 +494,80 @@
         </div>
     </div>
 
+    <!-- ================= APP 4: CUSTOM DASHBOARD MODULE ================= -->
+    <div id="custom-dash-wrapper" class="hidden relative">
+        <div class="max-w-5xl mx-auto bg-white min-h-screen shadow-lg rounded-lg p-8 my-4 border-t-8 border-orange-500">
+            
+            <!-- Section 1 & 2: Header (Logo และ หัวข้อ Dashboard) -->
+            <div class="flex items-center space-x-6 mb-10 pb-6 border-b-2 border-yellow-400">
+                
+                <!-- Logo (วงกลม) -->
+                <div class="custom-drop-zone relative w-20 h-20 rounded-full bg-gray-100 border-4 border-orange-400 overflow-hidden shrink-0 flex items-center justify-center shadow-md cursor-pointer hover:bg-orange-50" data-id="logo">
+                    <div class="z-10 flex flex-col items-center pointer-events-none drop-text-container">
+                        <span id="logo-text" class="text-xs text-gray-400 text-center px-1">Logo<br>(Drop)</span>
+                    </div>
+                    <img id="auto-logo" class="absolute inset-0 w-full h-full object-cover hidden z-0" alt="Logo">
+                    <input type="file" class="hidden file-input" accept="image/*">
+                </div>
+
+                <!-- หัวข้อ Dashboard -->
+                <div class="flex-1">
+                    <input type="text" 
+                           class="w-full text-4xl font-bold text-black border-none outline-none bg-transparent placeholder-gray-300 focus:ring-0" 
+                           placeholder="พิมพ์หัวข้อ Dashboard ของคุณที่นี่..." 
+                           value="">
+                    <input type="text" 
+                           class="w-full text-sm text-gray-500 mt-2 border-none outline-none bg-transparent placeholder-gray-300 focus:ring-0" 
+                           placeholder="พิมพ์รายละเอียด หรือหัวข้อย่อยสำหรับหน้านี้ได้..." 
+                           value="">
+                </div>
+            </div>
+
+            <!-- Section 3 & 4: Drag and Drop Zones (3 ช่อง แนวนอนเรียงจากบนลงล่าง) -->
+            <div class="space-y-16">
+
+                <!-- Zone 1: photo-01 -->
+                <div class="custom-drop-zone relative w-full h-[550px] border-2 border-dashed border-orange-300 rounded-2xl bg-yellow-50 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-yellow-100 group" data-id="photo-01">
+                    <div class="z-10 flex flex-col items-center pointer-events-none drop-text-container">
+                        <svg class="w-12 h-12 text-orange-500 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span class="text-lg font-bold text-black">ลากไฟล์รูปภาพมาวางที่นี่ (โซน 1)</span>
+                        <span class="text-sm text-gray-500 mt-1">หรือคลิกเพื่อเลือกไฟล์ (รองรับ JPG, PNG)</span>
+                    </div>
+                    <img id="auto-photo-01" class="absolute inset-0 w-full h-full object-contain hidden z-0" alt="Photo 01">
+                    <input type="file" class="hidden file-input" accept="image/*">
+                </div>
+
+                <!-- Zone 2: photo-02 -->
+                <div class="custom-drop-zone relative w-full h-[550px] border-2 border-dashed border-orange-300 rounded-2xl bg-yellow-50 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-yellow-100 group" data-id="photo-02">
+                    <div class="z-10 flex flex-col items-center pointer-events-none drop-text-container">
+                        <svg class="w-12 h-12 text-orange-500 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span class="text-lg font-bold text-black">ลากไฟล์รูปภาพมาวางที่นี่ (โซน 2)</span>
+                        <span class="text-sm text-gray-500 mt-1">หรือคลิกเพื่อเลือกไฟล์ (รองรับ JPG, PNG)</span>
+                    </div>
+                    <img id="auto-photo-02" class="absolute inset-0 w-full h-full object-contain hidden z-0" alt="Photo 02">
+                    <input type="file" class="hidden file-input" accept="image/*">
+                </div>
+
+                <!-- Zone 3: photo-03 -->
+                <div class="custom-drop-zone relative w-full h-[550px] border-2 border-dashed border-orange-300 rounded-2xl bg-yellow-50 flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:bg-yellow-100 group" data-id="photo-03">
+                    <div class="z-10 flex flex-col items-center pointer-events-none drop-text-container">
+                        <svg class="w-12 h-12 text-orange-500 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span class="text-lg font-bold text-black">ลากไฟล์รูปภาพมาวางที่นี่ (โซน 3)</span>
+                        <span class="text-sm text-gray-500 mt-1">หรือคลิกเพื่อเลือกไฟล์ (รองรับ JPG, PNG)</span>
+                    </div>
+                    <img id="auto-photo-03" class="absolute inset-0 w-full h-full object-contain hidden z-0" alt="Photo 03">
+                    <input type="file" class="hidden file-input" accept="image/*">
+                </div>
+
+            </div>
+        </div>
+
+        <!-- แจ้งเตือนเวลาอัพโหลดผิดประเภท (เฉพาะหน้า Custom Dash) -->
+        <div id="customDashToast" class="fixed bottom-5 right-5 bg-black text-white px-6 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50">
+            กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น!
+        </div>
+    </div>
+
     <!-- ========================================================= -->
     <!-- SCRIPTS SECTION: Central Core & Logic                      -->
     <!-- ========================================================= -->
@@ -508,6 +590,7 @@
             let textData = new TextDecoder("utf-8").decode(buffer);
             
             const checkStr = textData.replace(/[\s\uFEFF]/g, '').toLowerCase();
+            // อัปเดตคีย์เวิร์ดรองรับ Void อัตโนมัติ ("สถานะ", "เปิดบิล")
             const keywords = ['วันที่', 'ชื่อสินค้า', 'ยอด', 'รายการ', 'ชำระเงิน', 'ประเภท', 'สถานะ', 'เปิดบิล'];
             const hasKeyword = (str) => keywords.some(k => str.includes(k));
             
@@ -558,7 +641,7 @@
         }
 
         function switchGlobalTab(tabId) {
-            ['mendori', 'foodstory', 'void'].forEach(id => {
+            ['mendori', 'foodstory', 'void', 'custom-dash'].forEach(id => {
                 const wrapper = document.getElementById(`${id}-wrapper`);
                 if (wrapper) {
                     if (id === tabId) { wrapper.classList.remove('hidden'); wrapper.classList.add('block'); } 
@@ -566,7 +649,7 @@
                 }
             });
 
-            ['btn-mendori', 'btn-foodstory', 'btn-void'].forEach(id => {
+            ['btn-mendori', 'btn-foodstory', 'btn-void', 'btn-custom-dash'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.className = "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-base flex items-center gap-2 transition-colors";
             });
@@ -574,6 +657,7 @@
             if(tabId === 'mendori') { document.getElementById('btn-mendori').className = "border-orange-500 text-orange-600 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-base flex items-center gap-2 transition-colors"; } 
             else if(tabId === 'foodstory') { document.getElementById('btn-foodstory').className = "border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-base flex items-center gap-2 transition-colors"; } 
             else if(tabId === 'void') { document.getElementById('btn-void').className = "border-red-500 text-red-600 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-base flex items-center gap-2 transition-colors"; }
+            else if(tabId === 'custom-dash') { document.getElementById('btn-custom-dash').className = "border-purple-500 text-purple-600 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-base flex items-center gap-2 transition-colors"; }
         }
 
         function normalizeDatasets() {
@@ -593,10 +677,13 @@
                 const pMonth = pKey.split(' ')[0];
                 
                 let match = dailyKeys.find(dKey => dKey.startsWith(pMonth));
-                
+
+                // --- เพิ่มตรรกะ Fallback กลับเข้ามา ---
+                // ถ้าหาชื่อเดือนที่ตรงกันไม่เจอ แต่ในระบบมียอดขายอยู่แค่ "เดือนเดียว" ให้จับรวมกันอัตโนมัติ
                 if (!match && dailyKeys.length === 1) {
                     match = dailyKeys[0];
                 }
+                // ------------------------------
 
                 if (match) {
                     datasets[match].paymentData = (datasets[match].paymentData && datasets[match].paymentData.length > 0) 
@@ -610,55 +697,73 @@
         async function fetchDefaultData() {
             const overlay = document.getElementById('globalLoadingOverlay');
             document.getElementById('loadingTitle').innerText = "กำลังค้นหาข้อมูลอัตโนมัติ...";
-            document.getElementById('loadingSub').innerText = "รอสักครู่ ระบบกำลังดึงฐานข้อมูลจากโฟลเดอร์ data/";
+            document.getElementById('loadingSub').innerText = "รอสักครู่ ระบบกำลังดึงฐานข้อมูล (ทยอยโหลดเพื่อป้องกันเซิร์ฟเวอร์บล็อก)...";
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
 
-            // -------------------------------------------------------------
-            // อัปเดต: สร้างลิงก์เฉพาะรูปแบบที่ใช้จริง เพื่อลดภาระเซิร์ฟเวอร์
-            // จากเดิมสร้างเกือบ 8,000 ลิงก์ เหลือแค่ไม่ถึง 300 ลิงก์ (รันไวขึ้น 20 เท่า ไม่ติดลิมิตเบราว์เซอร์)
-            // -------------------------------------------------------------
             const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-            const exts = ['.xlsx', '.csv']; 
+            const years = ['2024', '2025', '2026', '2027'];
+            const exts = ['.csv', '.xlsx']; 
+            const prefix = './data/'; // ค้นหาแค่ในโฟลเดอร์ data/ เท่านั้น (ลดจำนวนไฟล์ที่ต้องเดาลงครึ่งนึง)
             const urlsToTry = [];
             
-            months.forEach(m => {
-                exts.forEach(ext => {
-                    // 1. แบบปกติ: ชื่อไฟล์-เดือน (เช่น Sales-01.xlsx, Void-01.xlsx)
-                    ['Sales', 'sales', 'Payment', 'payment', 'Category', 'category', 'Void', 'void'].forEach(type => {
-                        urlsToTry.push(`./data/${type}-${m}${ext}`);
-                    });
-                    
-                    // 2. แบบกำหนดปี: ชื่อไฟล์-เดือน-ปี (เช่น payment-01-2026.xlsx)
-                    // ครอบคลุมปีปัจจุบัน ย้อนหลัง และอนาคต 1 ปี
-                    ['2025', '2026', '2027'].forEach(y => {
-                        urlsToTry.push(`./data/Payment-${m}-${y}${ext}`);
-                        urlsToTry.push(`./data/payment-${m}-${y}${ext}`);
-                        urlsToTry.push(`./data/Category-${m}-${y}${ext}`);
-                        urlsToTry.push(`./data/category-${m}-${y}${ext}`);
+            const engTypes = ['sales', 'payment', 'category', 'void'];
+            const thTypes = ['ยอดขาย', 'การชำระเงิน', 'หมวดสินค้า', 'สถานะการสั่ง'];
+
+            // 1. แบบชื่อภาษาอังกฤษ ไม่มีปี (Priority แรก)
+            engTypes.forEach(type => {
+                months.forEach(month => {
+                    exts.forEach(ext => urlsToTry.push(`${prefix}${type}-${month}${ext}`));
+                });
+            });
+
+            // 2. แบบชื่อภาษาอังกฤษ มีปี
+            engTypes.forEach(type => {
+                months.forEach(month => {
+                    years.forEach(year => {
+                        exts.forEach(ext => urlsToTry.push(`${prefix}${type}-${month}-${year}${ext}`));
                     });
                 });
             });
 
-            // เพิ่มไฟล์ภาษาไทยเพื่อความครอบคลุม
-            urlsToTry.push('./data/ยอดขายสินค้าตามวัน.csv', './data/ยอดขายสินค้าตามวัน.xlsx');
-            urlsToTry.push('./data/รายงานสถานะการสั่งสินค้า.csv', './data/รายงานสถานะการสั่งสินค้า.xlsx');
+            // 3. แบบชื่อภาษาไทย (เผื่อไว้)
+            thTypes.forEach(type => {
+                months.forEach(month => {
+                    exts.forEach(ext => urlsToTry.push(`${prefix}${type}-${month}${ext}`));
+                });
+            });
+
+            urlsToTry.push(`${prefix}ยอดขายสินค้าตามวัน.csv`, `${prefix}ยอดขายสินค้าตามวัน.xlsx`);
+            urlsToTry.push(`${prefix}รายงานสถานะการสั่งสินค้า.csv`, `${prefix}รายงานสถานะการสั่งสินค้า.xlsx`);
 
             let loadedMendori = 0, loadedCategory = 0, loadedVoid = 0;
 
             try {
-                const fetchPromises = urlsToTry.map(filePath => {
-                    const cacheBuster = `?t=${new Date().getTime()}`; 
-                    return fetch(encodeURI(filePath) + cacheBuster, { cache: 'no-store' }).then(async (res) => {
-                        if (!res.ok) return null;
-                        const contentType = res.headers.get('content-type') || '';
-                        if (contentType.includes('text/html')) return null;
-                        const buffer = await res.arrayBuffer();
-                        return { filePath, buffer };
-                    }).catch(() => null);
-                });
+                // ทยอย Fetch ทีละชุดเพื่อป้องกันปัญหา (net::ERR_INSUFFICIENT_RESOURCES)
+                const chunkSize = 40; // เพิ่มจำนวนไฟล์ต่อรอบ
+                const results = [];
+                
+                for (let i = 0; i < urlsToTry.length; i += chunkSize) {
+                    const chunkUrls = urlsToTry.slice(i, i + chunkSize);
+                    
+                    const fetchPromises = chunkUrls.map(filePath => {
+                        const cacheBuster = `?t=${new Date().getTime()}`; 
+                        return fetch(encodeURI(filePath) + cacheBuster, { cache: 'no-store' }).then(async (res) => {
+                            if (!res.ok) return null;
+                            const contentType = res.headers.get('content-type') || '';
+                            if (contentType.includes('text/html')) return null;
+                            const buffer = await res.arrayBuffer();
+                            return { filePath, buffer };
+                        }).catch(() => null);
+                    });
 
-                const results = await Promise.all(fetchPromises);
+                    const chunkResults = await Promise.all(fetchPromises);
+                    results.push(...chunkResults);
+                    
+                    // ลดเวลาหน่วงลงเหลือ 50ms (พอให้ Vercel ไม่มองว่าโดนยิง แต่ผู้ใช้ไม่ต้องรอนาน)
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+
                 const validResults = results.filter(r => r !== null);
 
                 for (const fileData of validResults) {
@@ -711,7 +816,7 @@
                         
                         const validKeys = Object.keys(datasets).filter(k => {
                             const d = datasets[k];
-                            return d.summary && (d.summary.totalNetSales > 0 || d.summary.totalBills > 0);
+                            return (d.summary && (d.summary.totalNetSales > 0 || d.summary.totalBills > 0)) || (d.paymentData && d.paymentData.length > 0);
                         });
                         
                         if(validKeys.length > 0) {
@@ -802,7 +907,7 @@
                         
                         const validKeys = Object.keys(datasets).filter(k => {
                             const d = datasets[k];
-                            return d.summary && (d.summary.totalNetSales > 0 || d.summary.totalBills > 0);
+                            return (d.summary && (d.summary.totalNetSales > 0 || d.summary.totalBills > 0)) || (d.paymentData && d.paymentData.length > 0);
                         });
                         
                         if(validKeys.length > 0) {
@@ -860,6 +965,110 @@
                     }
                 });
             });
+
+            // ========================================================
+            // ฟังก์ชันสำหรับ Custom Dashboard Module 
+            // ========================================================
+            const autoLoadImage = (imgId, baseFilename) => {
+                const imgElement = document.getElementById(imgId);
+                const textContainer = imgElement.previousElementSibling;
+                const extensions = ['.jpg', '.png', '.jpeg', '.webp', '.JPG', '.PNG', '.JPEG'];
+                const bases = Array.isArray(baseFilename) ? baseFilename : [baseFilename];
+                let currentBase = 0;
+                let currentExt = 0;
+
+                const tryNextExtension = () => {
+                    if (currentBase < bases.length) {
+                        if (currentExt < extensions.length) {
+                            imgElement.src = bases[currentBase] + extensions[currentExt] + '?t=' + new Date().getTime();
+                            currentExt++;
+                        } else {
+                            currentBase++;
+                            currentExt = 0;
+                            tryNextExtension();
+                        }
+                    } else {
+                        imgElement.classList.add('hidden');
+                        if(textContainer) textContainer.classList.remove('hidden');
+                    }
+                };
+
+                imgElement.onload = () => {
+                    imgElement.classList.remove('hidden');
+                    if(textContainer) textContainer.classList.add('hidden');
+                };
+
+                imgElement.onerror = () => {
+                    tryNextExtension();
+                };
+
+                tryNextExtension();
+            };
+
+            // ดึง Logo จากหน้าสุด (Root)
+            autoLoadImage('auto-logo', ['./Logo', './logo']);
+            
+            // ดึง Photo จากโฟลเดอร์ /data/ เท่านั้น (ตามที่ตั้งค่าไว้ใน GitHub)
+            autoLoadImage('auto-photo-01', ['./data/photo-01', './data/Photo-01']);
+            autoLoadImage('auto-photo-02', ['./data/photo-02', './data/Photo-02']);
+            autoLoadImage('auto-photo-03', ['./data/photo-03', './data/Photo-03']);
+
+            const customDropZones = document.querySelectorAll('.custom-drop-zone');
+            
+            const showCustomDashToast = () => {
+                const toast = document.getElementById('customDashToast');
+                toast.classList.remove('opacity-0');
+                setTimeout(() => { toast.classList.add('opacity-0'); }, 3000);
+            };
+
+            const displayImage = (file, imgElement, textContainer) => {
+                if (!file.type.startsWith('image/')) {
+                    showCustomDashToast();
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imgElement.src = e.target.result;
+                    imgElement.classList.remove('hidden');
+                    textContainer.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            };
+
+            customDropZones.forEach(zone => {
+                const fileInput = zone.querySelector('.file-input');
+                const imgElement = zone.querySelector('img');
+                const textContainer = zone.querySelector('.drop-text-container');
+
+                zone.addEventListener('click', () => { fileInput.click(); });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        displayImage(e.target.files[0], imgElement, textContainer);
+                    }
+                });
+
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault(); 
+                    zone.classList.add('dragover');
+                });
+
+                zone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+
+                    if (e.dataTransfer.files.length > 0) {
+                        displayImage(e.dataTransfer.files[0], imgElement, textContainer);
+                    }
+                });
+            });
+
         });
 
         let datasets = {}; 
@@ -1082,7 +1291,7 @@
             
             const validKeys = Object.keys(datasets).filter(k => {
                 const d = datasets[k];
-                return d.summary && (d.summary.totalNetSales > 0 || d.summary.totalBills > 0);
+                return (d.summary && (d.summary.totalNetSales > 0 || d.summary.totalBills > 0)) || (d.paymentData && d.paymentData.length > 0);
             });
             
             const tabKeys = validKeys.sort((a, b) => (datasets[a].sortDate || 0) - (datasets[b].sortDate || 0));
@@ -1142,14 +1351,14 @@
             
             const validKeys = Object.keys(datasets).filter(k => {
                 const d = datasets[k];
-                return d.summary && (d.summary.totalNetSales > 0 || d.summary.totalBills > 0);
+                return (d.summary && (d.summary.totalNetSales > 0 || d.summary.totalBills > 0)) || (d.paymentData && d.paymentData.length > 0);
             });
             const sortedKeys = validKeys.sort((a, b) => (datasets[a].sortDate || 0) - (datasets[b].sortDate || 0));
             const totalMonths = sortedKeys.length;
 
             for (const month of sortedKeys) {
                 const obj = datasets[month];
-                if(obj.summary.daysCount > 0) {
+                if(obj.summary && obj.summary.daysCount > 0) {
                     totalSalesAll += obj.summary.totalNetSales;
                     totalBillsAll += obj.summary.totalBills;
                     labels.push(month); salesData.push(obj.summary.totalNetSales); billsData.push(obj.summary.totalBills);
@@ -1254,10 +1463,10 @@
             const obj = datasets[tabId];
             if (!obj) return;
 
-            document.getElementById('singleTotalSales').textContent = obj.summary.totalNetSales.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('singleTotalBills').textContent = obj.summary.totalBills > 0 ? obj.summary.totalBills.toLocaleString() : "0";
-            document.getElementById('singleTotalDiscount').textContent = obj.summary.totalDiscount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('singleAvgBill').textContent = (obj.summary.totalBills > 0 ? obj.summary.totalNetSales / obj.summary.totalBills : 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('singleTotalSales').textContent = obj.summary ? obj.summary.totalNetSales.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00';
+            document.getElementById('singleTotalBills').textContent = obj.summary && obj.summary.totalBills > 0 ? obj.summary.totalBills.toLocaleString() : "0";
+            document.getElementById('singleTotalDiscount').textContent = obj.summary ? obj.summary.totalDiscount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00';
+            document.getElementById('singleAvgBill').textContent = (obj.summary && obj.summary.totalBills > 0 ? obj.summary.totalNetSales / obj.summary.totalBills : 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
             ['singleSales', 'singleWeekend', 'singlePayment'].forEach(c => { if(chartInst[c]) chartInst[c].destroy(); });
 
@@ -2143,7 +2352,7 @@
                               ลากไฟล์ <span className="font-semibold text-green-700">.xlsx, .xls</span> หรือ <span className="font-semibold text-blue-700">.csv</span> เข้ามาวางในกรอบนี้
                             </p>
                             <p className="text-sm text-orange-600 font-medium mb-8 bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
-                              <i className="fas fa-server"></i> ทริค: นำไฟล์ใส่โฟลเดอร์ /data/ บนเซิร์ฟเวอร์เพื่อโหลดอัตโนมัติ
+                              <i className="fas fa-server"></i> ทริค: นำไฟล์ใส่โฟลเดอร์ /data/ หรืออัปโหลดไว้หน้าแรก ระบบจะโหลดให้เอง!
                             </p>
                             
                             <div className="flex flex-col sm:flex-row gap-4">
