@@ -2233,7 +2233,14 @@
                 catRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: theme.excelBase } };
                 catRow.getCell(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
 
-                Object.entries(catData.items).forEach(([itemName, itemData], idx) => {
+                // --- แก้ไข: เรียงลำดับข้อมูลตอน Export Excel ให้ตรงกับหน้าเว็บ ---
+                Object.entries(catData.items)
+                  .sort((a, b) => {
+                      const valA = isMonthly ? a[1].Total.qty : (a[1].months[selectedMonthKey]?.Total.qty || 0);
+                      const valB = isMonthly ? b[1].Total.qty : (b[1].months[selectedMonthKey]?.Total.qty || 0);
+                      return valB - valA;
+                  })
+                  .forEach(([itemName, itemData], idx) => {
                   let prefix = '    ';
                   if (idx === 0) prefix = '    (1) ';
                   else if (idx === 1) prefix = '    (2) ';
@@ -2536,7 +2543,14 @@
                                   <td className="p-2 border-r border-green-100"></td>
                                 </tr>
 
-                                {Object.entries(catData.items).map(([itemName, itemData], itemIndex) => {
+                                {/* --- แก้ไข: เรียงลำดับข้อมูลใหม่ตามมุมมองปัจจุบัน (มากไปน้อย) --- */}
+                                {Object.entries(catData.items)
+                                  .sort((a, b) => {
+                                      const valA = isMonthly ? a[1].Total.qty : (a[1].months[selectedMonthKey]?.Total.qty || 0);
+                                      const valB = isMonthly ? b[1].Total.qty : (b[1].months[selectedMonthKey]?.Total.qty || 0);
+                                      return valB - valA;
+                                  })
+                                  .map(([itemName, itemData], itemIndex) => {
                                     const rowTotalQty = isMonthly ? itemData.Total.qty : (itemData.months[selectedMonthKey]?.Total.qty || 0);
                                     const rowTotalNet = isMonthly ? itemData.Total.net : (itemData.months[selectedMonthKey]?.Total.net || 0);
 
